@@ -75,6 +75,49 @@ def percep_weights_update(df):
     return w
 
 
+# Logistic function
+def logistic(x):
+    return (1.0/(1.0+exp(-x)))
+
+# Gradient vector calculation
+def gradient_logistic_surrogate_loss(w, trainingSet):
+
+    df["Bound"] = df["Bound"].apply(lambda x: -1 if x == 0 else 1)
+    input_set = df.values.tolist()
+    w = [0.0 for _ in range(len(df.iloc[0]["subseqs_in_seq"])+1)]
+
+    for i in range(len(input_set)):
+        sample = input_set[i]
+        for ps=w[0], j=1 in range(random_sample[0]):
+            ps+=w[j]*sample[0]
+        g[0] += (logistic(sample[1]*ps)-1.0)*sample[1]
+        for j=1 in range(input_set):
+            g[j]+=(logistic(sample[1]*ps)-1.0)*sample[1]*sample[0]
+
+    for j=0 in range len(input_set) :
+        g[j] /= len(input_set)
+
+    return g
+
+# Logistic cost function calculation
+def logistic_surrogate_loss(w, trainingSet):
+
+    input_set = df.values.tolist()
+
+    for i in range(len(input_set)):
+        sample = input_set[i]
+        for ps=w[0], j=1 in range(len(input_set)):
+            ps += w[j]*sample[0]
+
+        S += log(1.0 + exp(-sample[1] * ps))
+
+    S /= len(input_set)
+
+    return S
+
+def logistic_regression(w, trainingSet, params):
+
+
 def pegasos_weights_update(df, T, lambda_):
     df["Bound"] = df["Bound"].apply(lambda x: -1 if x == 0 else 1)
     input_set = df.values.tolist()
@@ -131,7 +174,7 @@ if __name__ == '__main__':
     df3 = df3.rename({'':'A'})
     # df3.set_index('A').to_csv('submission.csv')
     #
-    ...
+
     import csv
     #
     # input_file = 'submission.csv'
